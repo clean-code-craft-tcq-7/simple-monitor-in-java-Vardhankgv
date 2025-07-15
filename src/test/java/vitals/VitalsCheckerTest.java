@@ -9,67 +9,67 @@ import org.junit.Test;
 public class VitalsCheckerTest {
 
 	@Test
-	void testVitalsOk_ValidValues() throws InterruptedException {
+	void testVitalsOkValidValues() throws InterruptedException {
 		assertTrue(VitalsChecker.vitalsOk(98.6f, 75f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_CriticalTemperatureHigh() throws InterruptedException {
+	void testVitalsOkCriticalTemperatureHigh() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(102.1f, 75f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_CriticalTemperatureLow() throws InterruptedException {
+	void testVitalsOkCriticalTemperatureLow() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(94.9f, 75f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_InvalidPulseRateLow() throws InterruptedException {
+	void testVitalsOkInvalidPulseRateLow() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(98.6f, 59f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_InvalidPulseRateHigh() throws InterruptedException {
+	void testVitalsOkInvalidPulseRateHigh() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(98.6f, 101f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_InvalidSpo2() throws InterruptedException {
+	void testVitalsOkInvalidSpo2() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(98.6f, 75f, 89f));
 	}
 
 	@Test
-	void testVitalsOk_AllCritical() throws InterruptedException {
+	void testVitalsOkAllCritical() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(102.1f, 101f, 89f));
 	}
 
 	@Test
-	void testVitalsOk_AllValid() throws InterruptedException {
+	void testVitalsOkAllValid() throws InterruptedException {
 		assertTrue(VitalsChecker.vitalsOk(98.6f, 70f, 92f));
 	}
 
 	@Test
-	void testVitalsOk_BoundaryTemperatureHigh() throws InterruptedException {
+	void testVitalsOkBoundaryTemperatureHigh() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(102f, 75f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_BoundaryTemperatureLow() throws InterruptedException {
+	void testVitalsOkBoundaryTemperatureLow() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(95f, 75f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_BoundaryPulseRateLow() throws InterruptedException {
+	void testVitalsOkBoundaryPulseRateLow() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(98.6f, 60f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_BoundaryPulseRateHigh() throws InterruptedException {
+	void testVitalsOkBoundaryPulseRateHigh() throws InterruptedException {
 		assertFalse(VitalsChecker.vitalsOk(98.6f, 100f, 95f));
 	}
 
 	@Test
-	void testVitalsOk_BoundarySpo2() throws InterruptedException {
+	void testVitalsOkBoundarySpo2() throws InterruptedException {
 		assertTrue(VitalsChecker.vitalsOk(98.6f, 75f, 90f));
 	}
 }
