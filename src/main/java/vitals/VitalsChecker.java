@@ -1,7 +1,10 @@
 package vitals;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class VitalsChecker {
+	private static final Logger LOG = LoggerFactory.getLogger(VitalsChecker.class);
 
 	private static final int CRITICAL_TEMPERATURE_LOW_THRESHOLD = 95;
 	private static final int CRITICAL_TEMPERATURE_HIGH_THRESHOLD = 102;
@@ -21,6 +24,7 @@ public abstract class VitalsChecker {
 	 * @throws InterruptedException if the thread is interrupted during sleep
 	 */
 	public static boolean vitalsOk(float temperature, float pulseRate, float spo2) throws InterruptedException {
+		LOG.debug("Received Vitals: \n temperature: {} \n Pulse Rate: {} \n Spo2: {}", temperature, pulseRate, spo2);
 		return isValidTemperature(temperature) && isValidPulseRate(pulseRate) && isValidSpo2(spo2);
 	}
 
@@ -32,7 +36,7 @@ public abstract class VitalsChecker {
 	 * @throws InterruptedException if the thread is interrupted during sleep
 	 */
 	private static boolean isValidTemperature(float temperature) throws InterruptedException {
-		return isValid(temperature, CRITICAL_TEMPERATURE_LOW_THRESHOLD, CRITICAL_TEMPERATURE_HIGH_THRESHOLD,
+		return isValidRange(temperature, CRITICAL_TEMPERATURE_LOW_THRESHOLD, CRITICAL_TEMPERATURE_HIGH_THRESHOLD,
 				"Temperature is critical!");
 	}
 
@@ -44,7 +48,7 @@ public abstract class VitalsChecker {
 	 * @throws InterruptedException if the thread is interrupted during sleep
 	 */
 	private static boolean isValidPulseRate(float pulseRate) throws InterruptedException {
-		return isValid(pulseRate, MIN_PULSE_VALUE, MAX_PULSE_VALUE, "Pulse Rate is out of range!");
+		return isValidRange(pulseRate, MIN_PULSE_VALUE, MAX_PULSE_VALUE, "Pulse Rate is out of range!");
 	}
 
 	/**
@@ -72,9 +76,10 @@ public abstract class VitalsChecker {
 	 * @return true if the value is valid, false otherwise
 	 * @throws InterruptedException if the thread is interrupted during sleep
 	 */
-	private static boolean isValid(float value, float min, float max, String alertMessage) throws InterruptedException {
+	private static boolean isValidRange(float value, float min, float max, String alertMessage) throws InterruptedException {
 		boolean isValid = value > min && value < max;
 		if (!isValid) {
+			LOG.warn("Provided value {} is not in range of {} and {}", value, min, max);
 			displayAlertMessage(alertMessage);
 		}
 		return isValid;
