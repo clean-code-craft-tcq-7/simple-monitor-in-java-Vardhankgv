@@ -22,19 +22,16 @@
             <groupId>${log4jGroup}</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4jVersion}</version>
-            <scope>implementation</scope>
        </dependency>
        <dependency>
             <groupId>${log4jGroup}</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4jVersion}</version>
-            <scope>implementation</scope>
       </dependency>
       <dependency>
            <groupId>${log4jGroup}</groupId>
            <artifactId>log4j-core</artifactId>
            <version>${log4jVersion}</version>
-           <scope>implementation</scope>
      </dependency>
     </dependencies>
 
