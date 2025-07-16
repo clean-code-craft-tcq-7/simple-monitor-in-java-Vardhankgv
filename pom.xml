@@ -6,6 +6,10 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <properties>
+      <log4jVersion>2.17.2</log4jVersion>
+      <log4jGroup>org.apache.logging.log4j</log4jGroup>
+    </properties>
     <dependencies>
         <!-- JUnit 4 dependency -->
         <dependency>
@@ -15,21 +19,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
+            <groupId>${log4jGroup}</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.17.2</version>
+            <version>${log4jVersion}</version>
             <scope>implementation</scope>
        </dependency>
        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
+            <groupId>${log4jGroup}</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.17.2</version>
+            <version>${log4jVersion}</version>
             <scope>implementation</scope>
       </dependency>
       <dependency>
-           <groupId>org.apache.logging.log4j</groupId>
+           <groupId>${log4jGroup}</groupId>
            <artifactId>log4j-core</artifactId>
-           <version>2.17.2</version>
+           <version>${log4jVersion}</version>
            <scope>implementation</scope>
      </dependency>
     </dependencies>
