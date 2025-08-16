@@ -11,13 +11,30 @@
       <log4jGroup>org.apache.logging.log4j</log4jGroup>
     </properties>
     <dependencies>
-        <!-- JUnit 4 dependency -->
+            <!-- JUnit 5 Jupiter API & Engine -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.0</version> <!-- Use latest stable -->
             <scope>test</scope>
         </dependency>
+
+        <!-- Mockito for mocking -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.12.0</version> <!-- Use latest stable -->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Optional: Mockito + JUnit 5 integration (if using @ExtendWith) -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>${log4jGroup}</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
@@ -52,7 +69,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>3.2.5</version>
             </plugin>
 
             <!-- JaCoCo Plugin for code coverage -->

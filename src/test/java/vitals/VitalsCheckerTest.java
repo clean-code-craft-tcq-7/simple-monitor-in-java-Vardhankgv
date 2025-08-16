@@ -1,75 +1,113 @@
 package vitals;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import org.junit.Test;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class VitalsCheckerTest {
+class VitalsCheckerTest {
 
-	@Test
-	public void testVitalsOkValidValues() throws InterruptedException {
-		assertTrue(VitalsChecker.vitalsOk(98.6f, 75f, 95f));
-	}
+    private VitalsChecker vitalsValidator;
 
-	@Test
-	public void testVitalsOkCriticalTemperatureHigh() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(102.1f, 75f, 95f));
-	}
+    @BeforeEach
+    void setup() {
+        // Prevent actual alert blinking and delay
+        AlertUtils.setAlertAnimator(Mockito.mock(AlertAnimator.class));
+        AlertUtils.setMessageProvider(key -> key);
 
-	@Test
-	public void testVitalsOkCriticalTemperatureLow() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(94.9f, 75f, 95f));
-	}
+        // Register all known validators
+        Map<String, VitalValidator> validators = new HashMap<>();
+        validators.put("temperature", new TemperatureValidator());
+        validators.put("pulseRate", new PulseRateValidator());
+        validators.put("spo2", new Spo2Validator());
+        validators.put("bloodSugar", new BloodSugarValidator());
+        validators.put("bloodPressure", new BloodPressureValidator());
+        validators.put("respiratoryRate", new RespiratoryRateValidator());
 
-	@Test
-	public void testVitalsOkInvalidPulseRateLow() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(98.6f, 59f, 95f));
-	}
+        vitalsValidator = new VitalsChecker(validators);
+    }
 
-	@Test
-	public void testVitalsOkInvalidPulseRateHigh() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(98.6f, 101f, 95f));
-	}
+    @Test
+    void shouldReturnTrueWhenAllVitalsAreWithinValidRange() throws InterruptedException {
+        Map<String, Float> vitals = new HashMap<>();
+        vitals.put("temperature", 98.6f);
+        vitals.put("pulseRate", 75f);
+        vitals.put("spo2", 97f);
+        vitals.put("bloodSugar", 90f);
+        vitals.put("bloodPressure", 120f);
+        vitals.put("respiratoryRate", 16f);
 
-	@Test
-	public void testVitalsOkInvalidSpo2() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(98.6f, 75f, 89f));
-	}
+        assertTrue(vitalsValidator.areValidVitals(vitals));
+    }
 
-	@Test
-	public void testVitalsOkAllCritical() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(102.1f, 101f, 89f));
-	}
+    @Test
+    void shouldReturnFalseWhenAnyOneVitalIsInvalid() throws InterruptedException {
+        Map<String, Float> vitals = new HashMap<>();
+        vitals.put("temperature", 98.6f);
+        vitals.put("pulseRate", 75f);
+        vitals.put("spo2", 97f);
+        vitals.put("bloodSugar", 60f); // invalid
+        vitals.put("bloodPressure", 120f);
+        vitals.put("respiratoryRate", 16f);
 
-	@Test
-	public void testVitalsOkAllValid() throws InterruptedException {
-		assertTrue(VitalsChecker.vitalsOk(98.6f, 70f, 92f));
-	}
+        assertFalse(vitalsValidator.areValidVitals(vitals));
+    }
 
-	@Test
-	public void testVitalsOkBoundaryTemperatureHigh() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(102f, 75f, 95f));
-	}
+    @Test
+    void shouldReturnFalseWhenMultipleVitalsAreInvalid() throws InterruptedException {
+        Map<String, Float> vitals = new HashMap<>();
+        vitals.put("temperature", 98.6f);
+        vitals.put("pulseRate", 55f); // invalid
+        vitals.put("spo2", 88f); // invalid
+        vitals.put("bloodSugar", 100f);
+        vitals.put("bloodPressure", 151f); // invalid
+        vitals.put("respiratoryRate", 16f);
 
-	@Test
-	public void testVitalsOkBoundaryTemperatureLow() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(95f, 75f, 95f));
-	}
+        assertFalse(vitalsValidator.areValidVitals(vitals));
+    }
 
-	@Test
-	public void testVitalsOkBoundaryPulseRateLow() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(98.6f, 60f, 95f));
-	}
+    @Test
+    void shouldReturnFalseWhenUnknownVitalIsPresentButKnownVitalsAreValid() throws InterruptedException {
+        Map<String, Float> vitals = new HashMap<>();
+        vitals.put("temperature", 98.6f);
+        vitals.put("pulseRate", 75f);
+        vitals.put("spo2", 95f);
+        vitals.put("unknownVital", 999f); // should be ignored
 
-	@Test
-	public void testVitalsOkBoundaryPulseRateHigh() throws InterruptedException {
-		assertFalse(VitalsChecker.vitalsOk(98.6f, 100f, 95f));
-	}
+        assertFalse(vitalsValidator.areValidVitals(vitals));
+    }
 
-	@Test
-	public void testVitalsOkBoundarySpo2() throws InterruptedException {
-		assertTrue(VitalsChecker.vitalsOk(98.6f, 75f, 90f));
-	}
+    @Test
+    void shouldReturnTrueWhenNoVitalsAreProvided() throws InterruptedException {
+        Map<String, Float> vitals = new HashMap<>();
+        assertTrue(vitalsValidator.areValidVitals(vitals)); // nothing to fail
+    }
+
+    @Test
+    void shouldReturnFalseWhenKnownVitalIsPresentWithNullValidator() throws InterruptedException {
+        // Custom case where known vital is provided but no validator is configured
+        Map<String, Float> vitals = new HashMap<>();
+        vitals.put("temperature", 98.6f);
+        vitals.put("spo2", 97f);
+        vitals.put("respiratoryRate", 16f);
+        vitals.put("bloodSugar", 100f);
+
+        // Do not add pulseRate validator on purpose
+        Map<String, VitalValidator> partialValidators = new HashMap<>();
+        partialValidators.put("temperature", new TemperatureValidator());
+        partialValidators.put("spo2", new Spo2Validator());
+        partialValidators.put("bloodSugar", new BloodSugarValidator());
+        partialValidators.put("respiratoryRate", new RespiratoryRateValidator());
+
+        VitalsChecker partialChecker = new VitalsChecker(partialValidators);
+
+        // pulseRate will be ignored since it has no validator
+        vitals.put("pulseRate", 80f);
+        assertFalse(partialChecker.areValidVitals(vitals));
+    }
 }
